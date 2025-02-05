@@ -84,11 +84,12 @@ async def process_task(task_id):
         # 格式化章节内容
         new_chapters: dict[str, str] = {chapter["item_id"]: await utils.format_chapter_content(chapter)
                                         for chapter in raw_chapters}
-        # 将新章节加入数据库  # TODO：根据是否完结决定是否加入数据库
-        for item_id, content in new_chapters.items():
-            db.add(Chapters(book_id=book_id, item_id=item_id, content=content))
-        db.commit()
-        logger.debug(f"Added {len(new_chapters)} new chapters to database")
+        # 将新章节加入数据库
+        if status != 0:
+            for item_id, content in new_chapters.items():
+                db.add(Chapters(book_id=book_id, item_id=item_id, content=content))
+            db.commit()
+            logger.debug(f"Added {len(new_chapters)} new chapters to database")
 
         # 合并已有章节和新章节
         chapters.update(new_chapters)
