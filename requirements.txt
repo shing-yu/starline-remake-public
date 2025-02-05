@@ -1,0 +1,11 @@
+fastapi
+jinja2
+sqlalchemy
+redis
+tomli
+loguru
+uvicorn
+httpx
+beautifulsoup4
+munch
+sy-ofb-python-sdk

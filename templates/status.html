@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载状态 - Starline</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 加载动画库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div class="bg-white rounded-xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl">
+            <!-- 动态内容区域 -->
+            {% if status == 'completed' %}
+            <div class="text-center">
+                <div class="mx-auto bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 animate__animated animate__bounceIn">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">下载完成!</h2>
+                <p class="text-gray-600 mb-6">您的小说已准备就绪</p>
+                <a href="{{ download_url }}" class="inline-block px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                    立即下载
+                </a>
+            </div>
+
+            {% elif status == 'not_found' %}
+            <!-- 任务ID不存在 -->
+            <div class="text-center">
+                <div class="mx-auto bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">任务ID不存在</h2>
+                <p class="text-gray-600 mb-6">请检查您的任务ID是否正确，或提交新的下载任务</p>
+                <!-- <a href="/" class="inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">返回首页</a> -->
+            </div>
+
+            {% elif status == 'pending' %}
+            <!-- 新增：排队等待状态 -->
+            <div class="text-center">
+                <div class="mx-auto bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 animate__animated animate__pulse">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">排队中</h2>
+                <p class="text-gray-600 mb-6">您的下载任务正在排队中，请耐心等待</p>
+                <p class="text-sm text-gray-500">等待时长取决于当前队列长度</p>
+                <button onclick="location.reload()" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">刷新</button>
+            </div>
+
+            {% elif status == 'processing' %}
+            <!-- 正在下载 -->
+            <div class="text-center">
+                <!-- 修正:将 animate-spin 直接应用到 SVG -->
+                <svg class="w-16 h-16 text-blue-500 mx-auto mb-6 animate-spin" 
+                     fill="none" 
+                     stroke="currentColor" 
+                     viewBox="0 0 24 24"
+                     style="transform-origin: center">
+                    <path stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          transform="scale(-1,1) translate(-24,0)" 
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">正在拼命下载中...</h2>
+                <p class="text-gray-600 mb-6">预计需要3-5分钟，请稍后刷新本页面查看结果</p>
+                <div class="bg-gray-200 rounded-full h-2 mb-6">
+                    <div class="bg-blue-500 h-2 rounded-full animate-progress"></div>
+                </div>
+                <p class="text-sm text-gray-500">下载用时取决于小说大小</p>
+                <button onclick="location.reload()" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">刷新</button>
+            </div>
+
+            {% elif status == 'failed' %}
+            <!-- 下载失败 -->
+            <div class="text-center">
+                <div class="mx-auto bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 animate__animated animate__shakeX">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">下载失败</h2>
+                <p class="text-gray-600 mb-6">{{ message|default("服务器暂时无法处理您的请求，请稍后再试") }}</p>
+            </div>
+
+            {% endif %}
+        </div>
+
+        <!-- 温馨提示 -->
+        <div class="mt-6 text-center text-sm text-gray-500">
+            <!-- <p>遇到问题？请联系 <a href="mailto:support@example.com" class="text-blue-500 hover:underline">客服支持</a></p> -->
+            <p>遇到问题？请联系 <a class="text-blue-500 hover:underline">星隅</a></p>
+            <p class="mt-2">当前状态码：{{ status_code }}</p>
+        </div>
+    </div>
+
+    <style>
+        @keyframes progress {
+            0% { width: 0; opacity: 0.7; }
+            50% { width: 50%; opacity: 1; }
+            100% { width: 100%; opacity: 0.7; }
+        }
+        .animate-progress {
+            animation: progress 2s ease-in-out infinite;
+        }
+    </style>
+</body>
+</html>
