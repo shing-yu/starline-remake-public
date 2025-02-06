@@ -56,7 +56,7 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             if not len(args) == 36:
                 return f"无效的任务ID"
             async with httpx.AsyncClient() as client:
-                response = await client.post(f"{endpoint}/tasks/{args}")
+                response = await client.get(f"{endpoint}/tasks/{args}")
             if response.status_code == 404:
                 return f"任务不存在"
             status = response.json()["status"]
