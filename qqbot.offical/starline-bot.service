@@ -1,0 +1,12 @@
+[Unit]
+After=network.target
+
+[Service]
+WorkingDirectory=/home/shingyu/app/starline-re/qqbot.offical
+ExecStart=/home/shingyu/app/starline-re/.venv/bin/python /home/shingyu/app/starline-re/qqbot.offical/main.py
+Restart=always
+RestartSec=3
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
