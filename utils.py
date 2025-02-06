@@ -58,6 +58,7 @@ async def get_info(book_id: str, redis_conn: redis.Redis) -> dict:
     return res
 
 
+# noinspection PyUnusedLocal
 @retry(1)
 async def get_chapters(items):
     async with httpx.AsyncClient() as client:
@@ -103,8 +104,11 @@ async def format_chapter_content(chapter: RawChapter) -> str:
     return res
 
 
-async def format_content(items, title, author, chapters):
-    content = f"\n{title}\n作者：{author}"
+async def format_content(items, title, otitle, author, chapters):
+    if title == otitle:
+        content = f"\n{title}\n作者：{author}"
+    else:
+        content = f"\n{title}\n原名：{otitle}\n作者：{author}"
     for item in items:
         content += chapters[item]
     return content
