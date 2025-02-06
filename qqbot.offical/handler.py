@@ -62,10 +62,14 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             status = response.json()["status"]
             if status != "failed":
                 return f"非下载失败任务"
-            creator_openid = (await redis_conn.get(f"qqbot:task:{args}")).decode()
+            creator_openid = await redis_conn.get(f"qqbot:task:{args}")
+            if creator_openid is None:
+                return f"无法重复恢复下载次数"
+            creator_openid = creator_openid.decode()
             if creator_openid != openid:
                 return f"你不是该任务的创建者"
             await redis_conn.incr(f"qqbot:quota:{openid}")
+            await redis_conn.delete(f"qqbot:task:{args}")  # 删除任务
             return f"已恢复下载次数"
         case "历史" | "ls" | "ht":
             hists = await redis_conn.lrange(f"qqbot:hists:{openid}", 0, -1)
