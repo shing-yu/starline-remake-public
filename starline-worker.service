@@ -1,12 +1,12 @@
 [Unit]
-After=network.target
+After=network.target redis-server.service starline-api.service
+StartLimitIntervalSec=20
 
 [Service]
 WorkingDirectory=/home/shingyu/app/starline-re
 ExecStart=/home/shingyu/app/starline-re/.venv/bin/python /home/shingyu/app/starline-re/worker.py
 Restart=always
 RestartSec=3
-StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target

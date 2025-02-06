@@ -20,7 +20,7 @@ class MyClient(botpy.Client):
     async def on_c2c_message_create(message: C2CMessage):
         content = message.content.lstrip(" ")
         logger.info(f"C2C||{message.author.user_openid}||{content}")
-        result = await commands_handler(message.author.user_openid, content, message)
+        result = await commands_handler(message.author.user_openid, content, message, prefix="")
         await message.reply(content=result, msg_seq=100)
 
 

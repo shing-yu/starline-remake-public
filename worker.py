@@ -54,6 +54,7 @@ async def process_task(task_id):
         logger.debug(f"Task {task_id}: Book {book_id} not found in cache and database")
         info = await utils.get_info(book_id, redis_conn)
         title = info["data"]["book_info"]["book_name"]
+        original_title = info["data"]["book_info"]["original_book_name"]
         author = info["data"]["book_info"]["author"]
         status = int(info["data"]["book_info"]["creation_status"])
         items = [chapter["item_id"] for chapter in info["data"]["item_data_list"]]
@@ -94,7 +95,7 @@ async def process_task(task_id):
         # 合并已有章节和新章节
         chapters.update(new_chapters)
         # 合并为完整小说文本
-        content = await utils.format_content(items, title, author, chapters)
+        content = await utils.format_content(items, title, original_title, author, chapters)
 
         # 保存到缓存
         await redis_conn.setex(f"book:{book_id}", timedelta(hours=config.ttls.contents), content)
