@@ -11,12 +11,12 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
     action = command[:2]
     args = command[2:].lstrip() if command[2:].startswith(" ") else command[2:]
 
-    quota = (await redis_conn.get(f"qqbot:quota:{openid}")).decode()
+    quota = await redis_conn.get(f"qqbot:quota:{openid}")
     if quota is None:
         await redis_conn.set(f"qqbot:quota:{openid}", config.quota, ex=get_remaining_time())
         quota = config.quota
     else:
-        quota = int(quota)
+        quota = int(quota.decode())
 
     match action:
         case "下载" | "xz" | "dl":
