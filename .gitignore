@@ -4,3 +4,4 @@ logs/
 test.py
 *.db
 *.log
+notes.txt
