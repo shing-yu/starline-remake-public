@@ -110,10 +110,13 @@ async def process_task(task_id):
     # 过去12小时内下载过的相同小说，或曾经下载过的已完结的小说，尝试获取文件ID，如果不存在则上传
     if result:
         try:
-            oclient.get_file_id(f"/{config.onedrive.root}/{book_id}.txt")
+            url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
         except Exception:  # noqa: 无法获取文件ID，说明文件不存在
             oclient.upload_big_file(content, f"/{config.onedrive.root}/{book_id}.txt")
-    url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
+            url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
+    else:
+        oclient.upload_big_file(content, f"/{config.onedrive.root}/{book_id}.txt")
+        url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
 
     # for i in range(1, 11):
     #     # 异步更新进度
