@@ -11,7 +11,7 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
     action = command[:2]
     args = command[2:].lstrip() if command[2:].startswith(" ") else command[2:]
 
-    quota = await redis_conn.get(f"qqbot:quota:{openid}").decode()
+    quota = (await redis_conn.get(f"qqbot:quota:{openid}")).decode()
     if quota is None:
         await redis_conn.set(f"qqbot:quota:{openid}", config.quota, ex=get_remaining_time())
         quota = config.quota
@@ -62,7 +62,7 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             status = response.json()["status"]
             if status != "failed":
                 return f"非下载失败任务"
-            creator_openid = await redis_conn.get(f"qqbot:task:{args}").decode()
+            creator_openid = (await redis_conn.get(f"qqbot:task:{args}")).decode()
             if creator_openid != openid:
                 return f"你不是该任务的创建者"
             await redis_conn.incr(f"qqbot:quota:{openid}")
