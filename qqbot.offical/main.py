@@ -25,6 +25,6 @@ class MyClient(botpy.Client):
 
 
 if __name__ == "__main__":
-    intents = botpy.Intents.all()
+    intents = botpy.Intents(public_messages=True)
     client = MyClient(intents=intents)
     client.run(appid=botid, secret=secret)
