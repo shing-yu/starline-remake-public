@@ -76,7 +76,7 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
                 content += f"\n{hist.decode()}"
             return content
         case "我的" | "wd" | "me" | "my":
-            return (f"{prefix}剩余下载次数: {quota}"
+            return (f"{prefix}剩余下载次数: {quota}\n"
                     f"你的OpenID: \n{openid}")
         case "帮助" | "bz" | "hp":
             content = (f"{prefix}使用说明：\n"
