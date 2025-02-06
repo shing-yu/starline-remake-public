@@ -35,8 +35,8 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
                 return f"任务已提交\n任务ID: {task_id}"
             pass
         case "查询" | "状态" | "cx" | "qu" | "st":
-            if not len(args) == 36:
-                return f"无效的任务ID"
+            # if not len(args) == 36:  # TODO: 提审限制
+            #     return f"无效的任务ID"
             async with httpx.AsyncClient() as client:
                 response = await client.get(f"{endpoint}/tasks/{args}")
             if response.status_code == 404:
@@ -53,8 +53,8 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             return f"{prefix}任务状态: {status}"
         case "恢复" | "hf" | "re":
             # 下载失败后恢复配额
-            if not len(args) == 36:
-                return f"无效的任务ID"
+            # if not len(args) == 36:  # TODO: 提审限制
+            #     return f"无效的任务ID"
             async with httpx.AsyncClient() as client:
                 response = await client.get(f"{endpoint}/tasks/{args}")
             if response.status_code == 404:
@@ -62,14 +62,14 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             status = response.json()["status"]
             if status != "failed":
                 return f"非下载失败任务"
-            creator_openid = await redis_conn.get(f"qqbot:task:{args}")
-            if creator_openid is None:
-                return f"无法重复恢复下载次数"
-            creator_openid = creator_openid.decode()
-            if creator_openid != openid:
-                return f"你不是该任务的创建者"
+            # creator_openid = await redis_conn.get(f"qqbot:task:{args}")  # TODO: 提审限制
+            # if creator_openid is None:
+            #     return f"无法重复恢复下载次数"
+            # creator_openid = creator_openid.decode()
+            # if creator_openid != openid:
+            #     return f"你不是该任务的创建者"
             await redis_conn.incr(f"qqbot:quota:{openid}")
-            await redis_conn.delete(f"qqbot:task:{args}")  # 删除任务
+            # await redis_conn.delete(f"qqbot:task:{args}")  # 删除任务  # TODO: 提审限制
             return f"已恢复下载次数"
         case "历史" | "ls" | "ht":
             hists = await redis_conn.lrange(f"qqbot:hists:{openid}", 0, -1)
@@ -88,8 +88,8 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
                        f"查询任务状态：/查询 任务ID\n"
                        f"恢复下载次数：/恢复 任务ID\n（下载失败后使用该命令恢复次数）\n"
                        f"查看历史记录：/历史\n"
-                       f"查看我的信息：/我的\n"
-                       f"查看所有命令别名：/别名")
+                       f"查看我的信息：/我的\n")
+                       # f"查看所有命令别名：/别名")  # TODO: 提审限制
             return content
         case "别名":
             content = (f"{prefix}所有命令别名：\n"
