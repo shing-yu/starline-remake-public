@@ -68,7 +68,12 @@ async def get_task_status(task_id: str, request: Request):
     }
 
 
-@app.get("/download/{task_id}")
+@app.get("/")
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/status/{task_id}")
 async def download_file(task_id: str, request: Request):
     task_data = await redis_conn.hgetall(f"task:{task_id}")
     if not task_data:

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查询任务 - Starline</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 加载动画库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="max-w-md w-full mx-4">
+    <div class="bg-white rounded-xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl">
+        <!-- 查询表单 -->
+        <form action="/status" method="GET" class="space-y-6">
+            <div class="text-center">
+                <div class="mx-auto bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 animate__animated animate__fadeIn">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">查询下载状态</h2>
+                <p class="text-gray-600 mb-6">请输入您的任务ID进行查询</p>
+            </div>
+
+            <div>
+                <input
+                        type="text"
+                        name="task_id"
+                        required
+                        placeholder="输入任务ID"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                        title="36位标准UUID格式"
+                        maxlength="36"
+                >
+
+            </div>
+
+            <button
+                    type="submit"
+                    class="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+            >
+                立即查询
+            </button>
+
+            <div class="text-sm text-gray-500 text-center">
+                <!-- <p>任务ID可在提交下载后获得的链接中找到</p> -->
+                <p>任务ID可在提交下载后获得</p>
+                <p class="mt-1">忘记ID？请使用 /历史 命令查看</p>
+            </div>
+        </form>
+    </div>
+
+    <!-- 温馨提示 -->
+    <div class="mt-6 text-center text-sm text-gray-500">
+        <p>遇到问题？请联系 <a class="text-blue-500 hover:underline">星隅</a></p>
+    </div>
+</div>
+</body>
+</html>
