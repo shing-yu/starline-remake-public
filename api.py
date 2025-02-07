@@ -73,8 +73,17 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/status/{task_id}")
+@app.get("/status")
 async def download_file(task_id: str, request: Request):
+    if not task_id:
+        return templates.TemplateResponse(
+            "status.html",
+            {
+                "request": request,
+                "status": "not_found",
+                "status_code": 422  # 无效的任务ID
+            }
+        )
     task_data = await redis_conn.hgetall(f"task:{task_id}")
     if not task_data:
         return templates.TemplateResponse(
