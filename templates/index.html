@@ -28,8 +28,10 @@
                 <input
                         type="text"
                         name="task_id"
+                        id="task_id_input"
                         required
                         placeholder="输入任务ID"
+                        value=""
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
                         title="36位标准UUID格式"
@@ -58,5 +60,17 @@
         <p>遇到问题？请联系 <a class="text-blue-500 hover:underline">星隅</a></p>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 解析URL查询参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('task_id');
+
+        // 如果存在task_id参数，则填充输入框
+        if (taskId) {
+            document.getElementById('task_id_input').value = taskId;
+        }
+    });
+</script>
 </body>
 </html>
