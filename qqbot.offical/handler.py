@@ -27,7 +27,8 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             if not book_id:
                 return f"无效的书籍ID/链接"
             async with httpx.AsyncClient() as client:
-                response = await client.post(f"{endpoint}/tasks", json={"book_id": book_id})
+                response = await client.post(f"{endpoint}/tasks", json={"book_id": book_id},
+                                             headers={"User-Agent": config.api.ua})
                 task_id = response.json()["task_id"]
                 await redis_conn.set(f"qqbot:task:{task_id}", openid, ex=7200)
                 await redis_conn.lpush(f"qqbot:hists:{openid}", task_id)
@@ -38,7 +39,8 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             # if not len(args) == 36:  # TODO: 提审限制
             #     return f"无效的任务ID"
             async with httpx.AsyncClient() as client:
-                response = await client.get(f"{endpoint}/tasks/{args}")
+                response = await client.get(f"{endpoint}/tasks/{args}",
+                                            headers={"User-Agent": config.api.ua})
             if response.status_code == 404:
                 return f"任务不存在"
             status = response.json()["status"]
@@ -56,7 +58,8 @@ async def commands_handler(openid: str, command: str, _message: C2CMessage | Gro
             # if not len(args) == 36:  # TODO: 提审限制
             #     return f"无效的任务ID"
             async with httpx.AsyncClient() as client:
-                response = await client.get(f"{endpoint}/tasks/{args}")
+                response = await client.get(f"{endpoint}/tasks/{args}",
+                                            headers={"User-Agent": config.api.ua})
             if response.status_code == 404:
                 return f"任务不存在"
             status = response.json()["status"]

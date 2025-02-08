@@ -44,6 +44,9 @@ async def main():
                 await redis_conn.hset(f"task:{task_id}", "message", "你提交的小说章节数量过多，超过3000章限制")
             await redis_conn.expire(f"task:{task_id}", timedelta(hours=config.ttls.tasks))
 
+        finally:
+            await utils.notify_user(task_id, redis_conn)
+
 
 async def process_task(task_id):
     # 异步获取任务数据

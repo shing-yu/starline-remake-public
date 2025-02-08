@@ -3,7 +3,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import FileResponse
 import uvicorn
 # noinspection PyPackageRequirements
-from pydantic import BaseModel
 from redis import asyncio as redis
 import uuid
 from loguru import logger
@@ -22,22 +21,25 @@ redis_conn = redis.Redis(host=config.redis.host,
                          db=config.redis.db)
 
 
-class TaskRequest(BaseModel):
-    book_id: str
-
-
 @app.post("/tasks")
-async def submit_task(task: TaskRequest, request: Request):
+async def submit_task(request: Request):
+    data = await request.json()
+    book_id = data.get("book_id", "")
+    notify = data.get("notify", 0)
+    if not book_id:
+        raise HTTPException(status_code=400, detail="Missing book_id")
     task_id = str(uuid.uuid4())
     platform = request.headers.get("User-Agent", "unknown")
-    logger.info(f"Received task {task_id} from {platform}, book_id: {task.book_id}")
-    if len(task.book_id) != 19:
-        raise HTTPException(status_code=400, detail="Invalid book_id length")
+    logger.info(f"Received task {task_id} from {platform}, book_id: {book_id}")
+    if len(book_id) != 19 or not book_id.isdigit():
+        raise HTTPException(status_code=400, detail="Invalid book_id format")
     # 存储任务元数据
     await redis_conn.hset(f"task:{task_id}", mapping={
-        "book_id": task.book_id,
+        "book_id": book_id,
         "status": "pending",
+        "notify": notify
     })
+    await redis_conn.expire(f"task:{task_id}", 86400)  # 后端任务超时时间为24小时
     # 任务入队
     await redis_conn.lpush("task_queue", task_id)
     return {"task_id": task_id}
@@ -55,6 +57,17 @@ async def get_task_status(task_id: str):
 
 
 @app.get("/get/{task_id}")
+async def get_task_status(task_id: str):
+    task_data = await redis_conn.hgetall(f"task:{task_id}")
+    if not task_data:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return {
+        "status": task_data.get(b"status").decode(),
+        "url": task_data.get(b"url", b"").decode(),
+    }
+
+
+@app.get("/data/{task_id}")
 async def get_task_status(task_id: str, request: Request):
     platform = request.headers.get("User-Agent", "unknown")
     if not platform.startswith("Bot"):
@@ -64,6 +77,7 @@ async def get_task_status(task_id: str, request: Request):
         raise HTTPException(status_code=404, detail="Task not found")
     return {
         "status": task_data.get(b"status").decode(),
+        "book_id": task_data.get(b"book_id").decode(),
         "content": task_data.get(b"content", b"").decode(),
     }
 
