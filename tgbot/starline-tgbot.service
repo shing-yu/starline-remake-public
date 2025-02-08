@@ -1,0 +1,12 @@
+[Unit]
+After=network.target redis-server.service starline-api.service starline-worker.service
+StartLimitIntervalSec=20
+
+[Service]
+WorkingDirectory=/home/shingyu/app/starline-re/tgbot
+ExecStart=/home/shingyu/app/starline-re/.venv/bin/python /home/shingyu/app/starline-re/tgbot/main.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

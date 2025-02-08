@@ -125,6 +125,16 @@ async def get_existed_book(book_id: str, redis_conn: redis.Redis, db) -> str | N
     return None
 
 
+async def notify_user(task_id: str, redis_conn: redis.Redis):
+    task = await redis_conn.hgetall(f"task:{task_id}")
+    notify_addr = task.get(b"notify", b"").decode()
+    if notify_addr:
+        with httpx.Client() as client:
+            client.post(notify_addr, json={"status": task[b"status"].decode(),
+                                           "task_id": task_id,
+                                           "url": task.get(b"url", b"").decode()})
+
+
 class TooManyChaptersError(Exception):
     def __init__(self, message="章节数量过多"):
         self.message = message
