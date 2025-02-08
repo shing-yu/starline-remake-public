@@ -25,7 +25,7 @@ redis_conn = redis.Redis(host=config.redis.host,
 async def submit_task(request: Request):
     data = await request.json()
     book_id = data.get("book_id", "")
-    notify = data.get("notify", 0)
+    notify = data.get("notify", "")
     if not book_id:
         raise HTTPException(status_code=400, detail="Missing book_id")
     task_id = str(uuid.uuid4())
