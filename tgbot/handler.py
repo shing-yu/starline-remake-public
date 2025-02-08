@@ -35,7 +35,7 @@ async def commands_handler(chat_id: str, command: str, bot: AsyncTeleBot) -> str
                 await redis_conn.set(f"tgbot:task:{task_id}", chat_id, ex=7200)
                 await redis_conn.lpush(f"tgbot:hists:{chat_id}", task_id)
                 await redis_conn.expire(f"tgbot:hists:{chat_id}", get_remaining_time())
-                return f"任务已提交\n任务ID: `{task_id}`"
+                return f"任务已提交\n任务ID: `{task_id}`\n完成后会主动发送文件"
             pass
         case "获取" | "hq" | "gt":
             if not len(args) == 36:
