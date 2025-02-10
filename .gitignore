@@ -3,5 +3,5 @@
 logs/
 test.py
 *.db
-*.log
+*.log*
 notes.txt
