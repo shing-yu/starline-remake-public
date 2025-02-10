@@ -46,7 +46,7 @@ async def handle_backend_notify(request: Request):
     chat_id = await redis_conn.get(f"tgbot:task:{task_id}")
     res = await redis_conn.hgetall(f"task:{task_id}")
     book_id = res[b"book_id"].decode()
-    data = res[b"content"]
+    content = res.get(b"content", b"")
     chat_id = chat_id.decode() if chat_id else None
 
     if status != "completed":
@@ -58,7 +58,7 @@ async def handle_backend_notify(request: Request):
     else:
         await bot.send_document(
             chat_id=chat_id,
-            document=data,
+            document=content,
             caption="小说下载完成",
             visible_file_name=f"{book_id}.txt"
         )
