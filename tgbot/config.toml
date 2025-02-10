@@ -1,0 +1,20 @@
+# Starline Telegram Bot Configuration
+
+token = ""
+proxy = ""
+
+api.endpoint = "http://localhost:8000"
+api.ua = "Bot/Telegram/1.0 (ID: )"
+
+no.host = "localhost"
+no.port = 8200
+no.endpoint = "http://localhost:8200"
+
+download_url = ""
+
+quota = 999
+
+[redis]
+host = "localhost"
+port = 6379
+db = 6

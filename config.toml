@@ -1,0 +1,29 @@
+[main]
+api.port = 8000
+api.host = "localhost"
+fqweb.endpoint = ""
+
+[logs]
+level = "DEBUG"
+
+[sqlite]
+url = "sqlite:///data.db"
+
+[redis]
+host = "localhost"
+port = 6379
+db = 6
+
+[ttls]
+# unit: hours
+tasks = 1
+infos = 1
+chapters = 12
+contents = 12
+
+[onedrive]
+client_id = ""
+client_secret = ""
+redirect_uri = ""
+refresh_token = ""
+root = ""
