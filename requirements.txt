@@ -8,4 +8,4 @@ uvicorn
 httpx
 beautifulsoup4
 munch
-sy-ofb-python-sdk
+boto3

@@ -6,7 +6,8 @@ from loguru import logger
 from sys import stdout
 
 from database import get_session, Books, Chapters
-from utils import config, RawChapter, oclient, TooManyChaptersError
+from utils import (config, RawChapter, TooManyChaptersError,
+                   s3_check_file, s3_upload_file, s3_get_link)
 import utils
 
 logger.remove()
@@ -111,16 +112,17 @@ async def process_task(task_id):
         logger.debug(f"Task {task_id}: Found book {book_id} in cache or database")
         content = result
     content = content.encode("utf-8") if not isinstance(content, bytes) else content
-    # 过去12小时内下载过的相同小说，或曾经下载过的已完结的小说，尝试获取文件ID，如果不存在则上传
+    # 过去12小时内下载过的相同小说，或曾经下载过的已完结的小说，检查文件是否存在，如果不存在则上传
     if result:
         try:
-            url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
+            s3_check_file(f"{book_id}.txt")
         except Exception:  # noqa: 无法获取文件ID，说明文件不存在
-            oclient.upload_big_file(content, f"/{config.onedrive.root}/{book_id}.txt")
-            url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
+            s3_upload_file(content, f"{book_id}.txt")
+        finally:
+            url = s3_get_link(f"{book_id}.txt")
     else:
-        oclient.upload_big_file(content, f"/{config.onedrive.root}/{book_id}.txt")
-        url = oclient.get_temp_link(f"/{config.onedrive.root}/{book_id}.txt")
+        s3_upload_file(content, f"{book_id}.txt")
+        url = s3_get_link(f"{book_id}.txt")
 
     # for i in range(1, 11):
     #     # 异步更新进度

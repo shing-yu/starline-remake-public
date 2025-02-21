@@ -2,12 +2,12 @@ import httpx
 import asyncio
 import functools
 from bs4 import BeautifulSoup
+import boto3
 
 from datetime import timedelta
 from redis import asyncio as redis
 from typing import TypedDict
 import json
-from ofb_python_sdk import Client
 
 from config import config
 from database import Books
@@ -19,11 +19,11 @@ class RawChapter(TypedDict):
     content: str
 
 
-oclient = Client(config.onedrive.client_id,
-                 config.onedrive.client_secret,
-                 config.onedrive.refresh_token,
-                 config.onedrive.redirect_uri,
-                 disable_progress=True)
+s3 = boto3.client("s3",
+                  endpoint_url=config.s3.endpoint,
+                  region_name=config.s3.region,
+                  aws_access_key_id=config.s3.id,
+                  aws_secret_access_key=config.s3.secret)
 
 
 def retry(times: int = 1, delay: int = 0):
@@ -133,6 +133,29 @@ async def notify_user(task_id: str, redis_conn: redis.Redis):
             client.post(notify_addr, json={"status": task[b"status"].decode(),
                                            "task_id": task_id,
                                            "url": task.get(b"url", b"").decode()})
+
+
+def s3_check_file(path: str):
+    try:
+        s3.head_object(Bucket=config.s3.bucket, Key=path)
+        return True
+    except s3.exceptions.ClientError as e:
+        if e.response["Error"]["Code"] == "404":
+            return False
+        raise e
+
+
+def s3_upload_file(data: bytes, path: str):
+    s3.put_object(Bucket=config.s3.bucket, Key=path, Body=data)
+
+
+def s3_get_link(path: str):
+    url = s3.generate_presigned_url(
+        ClientMethod="get_object",
+        Params={"Bucket": config.s3.bucket, "Key": path},
+        ExpiresIn=3600*8
+    )
+    return url
 
 
 class TooManyChaptersError(Exception):
