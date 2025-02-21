@@ -114,12 +114,9 @@ async def process_task(task_id):
     content = content.encode("utf-8") if not isinstance(content, bytes) else content
     # 过去12小时内下载过的相同小说，或曾经下载过的已完结的小说，检查文件是否存在，如果不存在则上传
     if result:
-        try:
-            s3_check_file(f"{book_id}.txt")
-        except Exception:  # noqa: 无法获取文件ID，说明文件不存在
+        if not s3_check_file(f"{book_id}.txt"):
             s3_upload_file(content, f"{book_id}.txt")
-        finally:
-            url = s3_get_link(f"{book_id}.txt")
+        url = s3_get_link(f"{book_id}.txt")
     else:
         s3_upload_file(content, f"{book_id}.txt")
         url = s3_get_link(f"{book_id}.txt")
