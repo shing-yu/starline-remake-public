@@ -146,7 +146,8 @@ def s3_check_file(path: str):
 
 
 def s3_upload_file(data: bytes, path: str):
-    s3.put_object(Bucket=config.s3.bucket, Key=path, Body=data)
+    s3.put_object(Bucket=config.s3.bucket, Key=path, Body=data,
+                  ContentType="text/plain", ContentDisposition="attachment")
 
 
 def s3_get_link(path: str):
